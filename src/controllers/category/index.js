@@ -1,0 +1,19 @@
+
+const express = require('express')
+const router = express.Router()
+const categoryFile = require('./category')
+
+const {
+	body
+} = require('express-validator')
+
+const cusValid = require('../../helper/custom_validators')
+const vMsg = require('../../helper/validation_message')
+
+const regxPwd = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[?@#_=$:\-.])(?=.{10,})/
+
+router.get('/get', cusValid.authTokenValidate, categoryFile.get)
+router.post('/post', cusValid.authTokenValidate, categoryFile.checkExistingCategory, categoryFile.post)
+router.put('/put', cusValid.authTokenValidate, categoryFile.put)
+router.post('/delete', cusValid.authTokenValidate, categoryFile.delete)
+module.exports = router
