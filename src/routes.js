@@ -9,6 +9,7 @@ router.use((req, res, next) => {
   next();
 });
 
+router.use("/request-field", require("./controllers/request-field"));
 router.use("/user",  require("./controllers/user"));
 router.use("/request", require("./controllers/request"));
 router.use("/category", require("./controllers/category"));
