@@ -1,6 +1,6 @@
-import { RequestField } from "../../models/RequestField";
-import { Response } from "../../models/Response";
-const mongoose = require("mongoose");
+const RequestField = require("../../models/RequestField"),
+  Response = require("../../models/Response"),
+  mongoose = require("mongoose");
 
 function all(req, res, next) {
   RequestField.find({ isActive: true }).exec((err, data) => {

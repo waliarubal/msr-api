@@ -10,7 +10,7 @@ const RequestFieldSchema = new mongoose.Schema(
         isRequired: { type: Boolean, default: false },
       },
     ],
-    modifiedAt: { type: RequestField, default: Date.now },
+    modifiedAt: { type: Date, default: Date.now },
     createdAt: { type: Date, default: Date.now },
     isActive: { type: Boolean, default: true },
   },
