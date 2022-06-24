@@ -57,6 +57,6 @@
     "util": "^0.12.3"
   },
   "devDependencies": {
-    "nodemon": "^2.0.13"
+    "nodemon": "^2.0.18"
   }
 }
