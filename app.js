@@ -22,7 +22,7 @@ require("./src/config/database");
 
 switch (ENV) {
   case "DEV":
-    app.use(cors({ origin: `http://localhost:${PORT}` }));
+    app.use(cors({ origin: `http://localhost:3001` }));
     break;
 
   case "PROD":

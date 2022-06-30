@@ -1,6 +1,7 @@
 const RequestCategoryMapping = require("../../models/RequestCategoryMapping");
 const Category = require("../../models/Category");
 const RequestType = require("../../models/RequestType");
+const mongoose = require('mongoose');
 
 module.exports.get = function (req, res, next) {
   RequestCategoryMapping.find({ isActive: true }).exec(function (err, data) {
@@ -63,7 +64,7 @@ module.exports.getReqTypeWiseCat = function (req, res, next) {
       },
     },
     { $unwind: "$cat" },
-    { $project: { categoryName: "$cat.name", categoryId: "$cat._id", _id: 0 } },
+    { $project: { categoryName: "$cat.name", categoryId: "$cat._id", _id: 0, isActive: "$cat.isActive", isVisible: "$cat.isVisible" } },
   ]).exec(function (err, data) {
     // console.log('reqcat data', data)
     if (err) {
