@@ -6,7 +6,7 @@ const RequestCategoryMappingSchema = new mongoose.Schema(
     categoryId: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
     modifiedAt: { type: Date, default: Date.now },
     createdAt: { type: Date, default: Date.now },
-    isActive: { type: Boolean, default: true },
+    isActive: { type: Boolean, default: true }
   },
   { timestamp: { createdAt: "createdAt", updatedAt: "modifiedAt" } }
 );

@@ -1,4 +1,5 @@
 const Category = require("../../models/Category");
+const mongoose = require("mongoose");
 
 module.exports.get = function (req, res, next) {
   Category.find({ isActive: true }).exec(function (err, data) {
@@ -27,8 +28,8 @@ module.exports.get = function (req, res, next) {
 };
 
 module.exports.post = function (req, res) {
-  const { name } = req.body;
-  const category = new Category({ name });
+  const { name, isActive, isRequired } = req.body;
+  const category = new Category({ name, isActive, isRequired });
   category.save(function (err, data) {
     if (err) {
       return res.status(200).json({

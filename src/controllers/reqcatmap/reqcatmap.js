@@ -1,7 +1,5 @@
 const RequestCategoryMapping = require("../../models/RequestCategoryMapping");
-const Category = require("../../models/Category");
-const RequestType = require("../../models/RequestType");
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 module.exports.get = function (req, res, next) {
   RequestCategoryMapping.find({ isActive: true }).exec(function (err, data) {
@@ -32,7 +30,10 @@ module.exports.get = function (req, res, next) {
 
 module.exports.post = function (req, res) {
   const { requestTypeId, categoryId } = req.body;
-  const rqcmap = new RequestCategoryMapping({ requestTypeId, categoryId });
+  const rqcmap = new RequestCategoryMapping({
+    requestTypeId,
+    categoryId,
+  });
   rqcmap.save(function (err, data) {
     if (err) {
       return res.status(200).json({
@@ -64,9 +65,17 @@ module.exports.getReqTypeWiseCat = function (req, res, next) {
       },
     },
     { $unwind: "$cat" },
-    { $project: { categoryName: "$cat.name", categoryId: "$cat._id", _id: 0, isActive: "$cat.isActive", isVisible: "$cat.isVisible" } },
+    {
+      $project: {
+        categoryName: "$cat.name",
+        categoryId: "$cat._id",
+        _id: 0,
+        isActive: "$cat.isActive",
+        isRequired: "$cat.isRequired",
+      },
+    },
   ]).exec(function (err, data) {
-    // console.log('reqcat data', data)
+    console.log("reqcat data", data);
     if (err) {
       return res.status(200).json({
         success: false,
