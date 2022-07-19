@@ -53,7 +53,7 @@ module.exports.post = function (req, res) {
 
 module.exports.getReqTypeWiseCat = function (req, res, next) {
   let condition = { requestTypeId: mongoose.Types.ObjectId(req.body._id) };
-  console.log(condition);
+
   RequestCategoryMapping.aggregate([
     { $match: condition },
     {

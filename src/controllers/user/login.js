@@ -58,7 +58,6 @@ function getUserList(req, res, next) {
           error: err,
         });
       } else {
-        console.log(data);
         return res.status(200).json({
           success: true,
           message: "User List Get Request Completed Successfully !",

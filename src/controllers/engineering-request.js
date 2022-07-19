@@ -20,6 +20,9 @@ function post(req, res, next) {
     projectName,
     requestTypes,
     userId,
+    isDraft,
+    files,
+    successCriteria,
   } = req.body;
   console.log(req.body);
 
@@ -37,17 +40,86 @@ function post(req, res, next) {
   engRequest.userId = userId;
   engRequest.status = STATUS_OPEN;
   engRequest.requestTypes = requestTypes;
+  engRequest.isDraft = isDraft;
+  engRequest.files = files;
+  engRequest.successCriteria = successCriteria;
   engRequest.save(async (err, data) => {
     if (err) {
       return res.status(400).json({
         success: false,
-        message: "Failed to create engineering request.",
+        message: `Failed to create ${
+          isDraft ? "draft " : " "
+        }engineering request.`,
         error: err,
       });
     } else {
       return res.status(200).json({
         success: true,
-        message: "Engineering request created.",
+        message: `Engineering request ${isDraft ? "draft " : " "}created.`,
+        data: data,
+      });
+    }
+  });
+}
+
+function put(req, res, next) {
+  let {
+    _id,
+    shipmentTypeId,
+    shipmentAddress,
+    requestedCompletionDate,
+    expectedCompletionDate,
+    requestBy,
+    msftAlias,
+    requestDescription,
+    priority,
+    projectName,
+    requestTypes,
+    userId,
+    isDraft,
+    files,
+    successCriteria,
+    techContact,
+    projectContact,
+    status
+  } = req.body;
+  console.log(req.body);
+
+  let engRequest = {};
+  engRequest.quantity = 1;
+  engRequest.priority = priority;
+  engRequest.projectName = projectName;
+  engRequest.requestDescription = requestDescription;
+  engRequest.requestedCompletionDate = requestedCompletionDate;
+  engRequest.expectedCompletionDate = expectedCompletionDate;
+  engRequest.requestBy = requestBy;
+  engRequest.msftAlias = msftAlias;
+  engRequest.shipmentType = shipmentTypeId;
+  engRequest.shipmentAddress = shipmentAddress;
+  engRequest.userId = mongoose.Types.ObjectId(userId);
+  engRequest.status = status;
+  engRequest.requestTypes = requestTypes;
+  engRequest.isDraft = isDraft;
+  engRequest.files = files;
+  engRequest.successCriteria = successCriteria;
+  engRequest.status = status;
+  engRequest.techContact = mongoose.Types.ObjectId(techContact) || null;
+  engRequest.projectContact = mongoose.Types.ObjectId(projectContact) || null;
+
+  let condition = { _id: mongoose.Types.ObjectId(_id) };
+  EngineeringRequest.update(condition, engRequest).exec((err, data) => {
+    if (err) {
+      return res.status(400).json({
+        success: false,
+        message: `Failed to update ${
+          isDraft ? "draft " : " "
+        }engineering request.`,
+        error: err,
+      });
+    } else {
+      return res.status(200).json({
+        success: true,
+        message: `Engineering request ${isDraft ? "draft " : " "}updated.`,
         data: data,
       });
     }
@@ -66,7 +138,7 @@ function get(req, res, next) {
         message: "Failed to get engineering requests.",
         error: err,
       });
-    } else if (data && data.length > 0) {
+    } else if (data) {
       return res.status(200).json({
         success: true,
         message: "Enginnering requests fetched.",
@@ -77,23 +149,22 @@ function get(req, res, next) {
 }
 
 function getById(req, res, next) {
-  let condition = { _id: mongoose.Types.ObjectId(req.params.id) };
+  let condition = { _id: mongoose.Types.ObjectId(req.query.id) };
 
   EngineeringRequest.find(condition).exec((err, data) => {
     if (err) {
       return res.status(200).json({
         success: false,
-        message: "Failed to get engineering requests.",
+        message: `Failed to get engineering request '${req.query.id}'.`,
         error: err,
       });
     } else if (data && data.length > 0) {
       return res.status(200).json({
         success: true,
-        message: "Enginnering requests fetched.",
+        message: "Enginnering request '${req.query.id}' fetched.",
         data: data[0],
       });
     }
-    console.log(data);
   });
 }
 
@@ -110,5 +181,6 @@ async function del(req, res, next) {
 router.get("/getById", validator.authTokenValidate, getById);
 router.get("/get", validator.authTokenValidate, get);
 router.post("/post", validator.authTokenValidate, post);
+router.put("/put", validator.authTokenValidate, put);
 router.delete("/delete", validator.authTokenValidate, del);
 module.exports = router;

@@ -48,26 +48,32 @@ module.exports.post = function (req, res) {
 };
 
 module.exports.put = function (req, res) {
-  let condition = { _id: mongoose.Types.ObjectId(req.body._id) };
+  let { categoryId, categoryName, isActive, isRequired } = req.body;
+  let condition = { _id: mongoose.Types.ObjectId(categoryId) };
   let updateData = req.body;
-  Category.update(condition, updateData).exec(function (err, data) {
+  
+  Category.update(condition, {
+    name: categoryName,
+    isActive: isActive,
+    isRequired: isRequired
+  }).exec(function (err, data) {
     if (err) {
       return res.status(200).json({
         success: false,
-        message: " Error While Updating",
+        message: `Error While Updating '${categoryName}'`,
         err: err,
       });
     } else {
       if (data.nModified === 1) {
         return res.status(200).json({
           success: true,
-          message: " Category Updated Successfully ",
+          message: `Category '${categoryName}' Updated Successfully`,
           data: data,
         });
       } else {
         return res.status(200).json({
           success: false,
-          message: " Category Not Updated ",
+          message: `Category '${categoryName}' Not Updated`,
           error: data,
         });
       }
