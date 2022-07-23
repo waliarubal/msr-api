@@ -27,12 +27,12 @@ function post(req, res, next) {
   console.log(req.body);
 
   let engRequest = new EngineeringRequest();
-  engRequest.quantity = 1;
+  // engRequest.quantity = 1;
   engRequest.priority = priority;
   engRequest.projectName = projectName;
   engRequest.requestDescription = requestDescription;
   engRequest.requestedCompletionDate = dueDate;
-  engRequest.expectedCompletionDate = dueDate;
+  // engRequest.expectedCompletionDate = dueDate;
   engRequest.requestBy = requestBy;
   engRequest.msftAlias = msftAlias;
   engRequest.shipmentType = shipmentTypeId;
@@ -68,7 +68,7 @@ function put(req, res, next) {
     shipmentTypeId,
     shipmentAddress,
     requestedCompletionDate,
-    expectedCompletionDate,
+    // expectedCompletionDate,
     requestBy,
     msftAlias,
     requestDescription,
@@ -79,19 +79,19 @@ function put(req, res, next) {
     isDraft,
     files,
     successCriteria,
-    techContact,
-    projectContact,
+    // techContact,
+    // projectContact,
     status
   } = req.body;
   console.log(req.body);
 
   let engRequest = {};
-  engRequest.quantity = 1;
+  // engRequest.quantity = 1;
   engRequest.priority = priority;
   engRequest.projectName = projectName;
   engRequest.requestDescription = requestDescription;
   engRequest.requestedCompletionDate = requestedCompletionDate;
-  engRequest.expectedCompletionDate = expectedCompletionDate;
+  // engRequest.expectedCompletionDate = expectedCompletionDate;
   engRequest.requestBy = requestBy;
   engRequest.msftAlias = msftAlias;
   engRequest.shipmentType = shipmentTypeId;
@@ -103,8 +103,8 @@ function put(req, res, next) {
   engRequest.files = files;
   engRequest.successCriteria = successCriteria;
   engRequest.status = status;
-  engRequest.techContact = mongoose.Types.ObjectId(techContact) || null;
-  engRequest.projectContact = mongoose.Types.ObjectId(projectContact) || null;
+  // engRequest.techContact = mongoose.Types.ObjectId(techContact) || null;
+  // engRequest.projectContact = mongoose.Types.ObjectId(projectContact) || null;
 
   let condition = { _id: mongoose.Types.ObjectId(_id) };
   EngineeringRequest.update(condition, engRequest).exec((err, data) => {
