@@ -34,7 +34,7 @@ const EngineeringRequestsSchema = new mongoose.Schema(
     // history: [],
     crmId: { type: String, default: "" },
     // crmHistory: [],
-    // notes: [],
+    notes: [],
     files: [],
     requestTypes: [],
   },
