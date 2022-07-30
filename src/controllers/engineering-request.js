@@ -14,13 +14,14 @@ function post(req, res, next) {
     shipmentTypeId,
     shipmentAddress,
     dueDate,
-    // requestBy,
-    msftAlias,
     requestDescription,
     priority,
     projectName,
     requestTypes,
     userId,
+    msftAlias,
+    customerId,
+    customerMsftAlias,
     isDraft,
     files,
     successCriteria,
@@ -28,17 +29,16 @@ function post(req, res, next) {
   console.log(req.body);
 
   let engRequest = new EngineeringRequest();
-  // engRequest.quantity = 1;
   engRequest.priority = priority;
   engRequest.projectName = projectName;
   engRequest.requestDescription = requestDescription;
   engRequest.requestedCompletionDate = dueDate;
-  // engRequest.expectedCompletionDate = dueDate;
-  // engRequest.requestBy = requestBy;
+  engRequest.userId = mongoose.Types.ObjectId(userId); // discuss
   engRequest.msftAlias = msftAlias; // discuss
+  engRequest.customerId = mongoose.Types.ObjectId(customerId);
+  engRequest.customerMsftAlias = customerMsftAlias;
   engRequest.shipmentType = shipmentTypeId; // discuss
   engRequest.shipmentAddress = shipmentAddress; // discuss
-  engRequest.userId = userId; // discuss
   engRequest.status = STATUS_OPEN;
   engRequest.requestTypes = requestTypes;
   engRequest.isDraft = isDraft;
@@ -69,43 +69,38 @@ function put(req, res, next) {
     shipmentTypeId,
     shipmentAddress,
     requestedCompletionDate,
-    // expectedCompletionDate,
-    requestBy,
+    userId,
     msftAlias,
+    customerId,
+    customerMsftAlias,
     requestDescription,
     priority,
     projectName,
     requestTypes,
-    userId,
     isDraft,
     files,
     successCriteria,
-    // techContact,
-    // projectContact,
     status,
   } = req.body;
   console.log(req.body);
 
   let engRequest = {};
-  // engRequest.quantity = 1;
   engRequest.priority = priority;
   engRequest.projectName = projectName;
   engRequest.requestDescription = requestDescription;
   engRequest.requestedCompletionDate = requestedCompletionDate;
-  // engRequest.expectedCompletionDate = expectedCompletionDate;
-  engRequest.requestBy = requestBy;
+  engRequest.customerId = mongoose.Types.ObjectId(customerId);
+  engRequest.customerMsftAlias = customerMsftAlias;
+  engRequest.userId = mongoose.Types.ObjectId(userId);
   engRequest.msftAlias = msftAlias;
   engRequest.shipmentType = shipmentTypeId;
   engRequest.shipmentAddress = shipmentAddress;
-  engRequest.userId = mongoose.Types.ObjectId(userId);
   engRequest.status = status;
   engRequest.requestTypes = requestTypes;
   engRequest.isDraft = isDraft;
   engRequest.files = files;
   engRequest.successCriteria = successCriteria;
   engRequest.status = status;
-  // engRequest.techContact = mongoose.Types.ObjectId(techContact) || null;
-  // engRequest.projectContact = mongoose.Types.ObjectId(projectContact) || null;
 
   let condition = { _id: mongoose.Types.ObjectId(_id) };
   EngineeringRequest.update(condition, engRequest).exec((err, data) => {
@@ -181,99 +176,109 @@ async function del(req, res, next) {
 
 async function addToCrm(req, res, next) {
   let condition = { _id: mongoose.Types.ObjectId(req.query.id) };
-  EngineeringRequest.find(condition).exec(async (err, data) => {
-    if (err) {
-      return res.status(200).json({
-        success: false,
-        message: `Failed to get engineering request '${req.query.id}' for adding to CRM.`,
-        error: err,
-      });
-    } else if (data && data.length > 0) {
-      let engRequest = data[0];
+  EngineeringRequest.find(condition)
+    .populate("shipmentType")
+    .populate("userId")
+    .populate("customerId")
+    .exec(async (err, data) => {
+      if (err) {
+        return res.status(200).json({
+          success: false,
+          message: `Failed to get engineering request '${req.query.id}' for adding to CRM.`,
+          error: err,
+        });
+      } else if (data && data.length > 0) {
+        let engRequest = data[0];
 
-      let mechanicalEngineeringRequest = "";
-      let record = engRequest.requestTypes.filter(
-        (r) => r.name === "Mechanical Engineering Request"
-      );
-      if (record && record.length > 0) {
-        for (let index = 0; index < record[0].categories.length; index++) {
-          mechanicalEngineeringRequest += `${record[0].categories[index].categoryName},`;
+        let mechanicalEngineeringRequest = "";
+        let record = engRequest.requestTypes.filter(
+          (r) => r.name === "Mechanical Engineering Request"
+        );
+        if (record && record.length > 0) {
+          for (let index = 0; index < record[0].categories.length; index++) {
+            mechanicalEngineeringRequest += `${record[0].categories[index].categoryName},`;
+          }
         }
-      }
 
-      let turnkeyRequest = "";
-      record = engRequest.requestTypes.filter(
-        (r) => r.name === "Turnkey Request"
-      );
-      if (record && record.length > 0) {
-        for (let index = 0; index < record[0].categories.length; index++) {
-          turnkeyRequest += `${record[0].categories[index].categoryName},`;
+        let turnkeyRequest = "";
+        record = engRequest.requestTypes.filter(
+          (r) => r.name === "Turnkey Request"
+        );
+        if (record && record.length > 0) {
+          for (let index = 0; index < record[0].categories.length; index++) {
+            turnkeyRequest += `${record[0].categories[index].categoryName},`;
+          }
         }
-      }
 
-      let eletricalEngineeringRequest = "";
-      record = engRequest.requestTypes.filter(
-        (r) => r.name === "Eletrical Engineering Request"
-      );
-      if (record && record.length > 0) {
-        for (let index = 0; index < record[0].categories.length; index++) {
-          eletricalEngineeringRequest += `${record[0].categories[index].categoryName},`;
+        let eletricalEngineeringRequest = "";
+        record = engRequest.requestTypes.filter(
+          (r) => r.name === "Eletrical Engineering Request"
+        );
+        if (record && record.length > 0) {
+          for (let index = 0; index < record[0].categories.length; index++) {
+            eletricalEngineeringRequest += `${record[0].categories[index].categoryName},`;
+          }
         }
-      }
 
-      let consultation = "";
-      record = engRequest.requestTypes.filter((r) => r.name === "Consultation");
-      if (record && record.length > 0) {
-        for (let index = 0; index < record[0].categories.length; index++) {
-          consultation += `${record[0].categories[index].categoryName},`;
+        let consultation = "";
+        record = engRequest.requestTypes.filter(
+          (r) => r.name === "Consultation"
+        );
+        if (record && record.length > 0) {
+          for (let index = 0; index < record[0].categories.length; index++) {
+            consultation += `${record[0].categories[index].categoryName},`;
+          }
         }
-      }
 
-      let payload = {
-        priority: engRequest.priority,
-        projectName: engRequest.projectName,
-        requestDescription: engRequest.requestDescription,
-        msftAlias: engRequest.msftAlias,
-        shipmentType: engRequest.shipmentType,
-        shipmentAddress: engRequest.shipmentAddress,
-        userId: engRequest.userId,
-        status: engRequest.status,
-        successCriteria: engRequest.successCriteria,
-        requestedCompletionDate: engRequest.requestedCompletionDate,
-        mechanicalEngineeringRequest: mechanicalEngineeringRequest,
-        turnkeyRequest: turnkeyRequest,
-        eletricalEngineeringRequest: eletricalEngineeringRequest,
-        consultation: consultation,
-        crmId: engRequest.crmId,
-      };
+        let payload = {
+          priority: engRequest.priority,
+          projectName: engRequest.projectName,
+          requestDescription: engRequest.requestDescription,
+          shipmentType: engRequest.shipmentType.name,
+          shipmentAddress: engRequest.shipmentAddress,
+          userId: engRequest.userId.email,
+          msftAlias: engRequest.msftAlias,
+          customerId: engRequest.customerId.email,
+          customerMsftAlias: engRequest.customerMsftAlias,
+          status: engRequest.status,
+          successCriteria: engRequest.successCriteria,
+          requestedCompletionDate: engRequest.requestedCompletionDate,
+          mechanicalEngineeringRequest: mechanicalEngineeringRequest,
+          turnkeyRequest: turnkeyRequest,
+          eletricalEngineeringRequest: eletricalEngineeringRequest,
+          consultation: consultation,
+          crmId: engRequest.crmId,
+        };
 
-      console.log(payload);
+        console.log(payload);
 
-      let crmId = await axios
-        .post(
-          `https://hwlabemailservice.azurewebsites.net:443/api/CRMSync/triggers/manual/invoke?api-version=2022-05-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=sY494hGI4sIyCfYUeSdlmbl2ejrA8qn3jaFw75npOY8`,
-          payload
-        )
-        .then(async (response) => {
-          EngineeringRequest.update(condition, {
-            $set: { crmId: response.headers.crmId },
-          }).exec((error, data) => {
-            if (!data)
-              console.log(
-                `Updated engineering request with CRM ID ${response.headers.crmId}.`
-              );
+        let crmId = await axios
+          .post(
+            `https://hwlabemailservice.azurewebsites.net:443/api/CRMSync/triggers/manual/invoke?api-version=2022-05-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=sY494hGI4sIyCfYUeSdlmbl2ejrA8qn3jaFw75npOY8`,
+            payload
+          )
+          .then(async (response) => {
+            const crmid = response.headers.crmid;
+            console.log(`CRM ID: ${crmid}`);
+            EngineeringRequest.update(condition, {
+              $set: { crmId: crmid },
+            }).exec((error, data) => {
+              if (!data)
+                console.log(
+                  `Updated engineering request with CRM ID ${crmid}.`
+                );
+            });
+
+            return crmid;
           });
 
-          return response.headers.crmId;
+        return res.status(200).json({
+          success: true,
+          message: `Enginnering request '${req.query.id}' added to CRM with ID ${crmId}.`,
+          data: crmId,
         });
-
-      return res.status(200).json({
-        success: true,
-        message: `Enginnering request '${req.query.id}' added to CRM with ID ${crmId}.`,
-        data: data[0],
-      });
-    }
-  });
+      }
+    });
 }
 
 router.get("/getById", validator.authTokenValidate, getById);
