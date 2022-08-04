@@ -9,6 +9,21 @@ const EngineeringRequest = require("../models/EngineeringRequest");
 
 const STATUS_OPEN = "5ec8eb047ef9d51f3cc63813";
 
+const PRIORITY = {
+  Critical: 4,
+  High: 1,
+  Normal: 2,
+  Low: 3
+};
+
+const SHIPMENT_TYPE = {
+  ShipToAddress: 1,
+  ShipToWorkAddress: 2,
+  Other: 3,
+  PickupAtHwLabCabinet: 4,
+  None: 5
+};
+
 function post(req, res, next) {
   let {
     shipmentTypeId,
@@ -177,7 +192,6 @@ async function del(req, res, next) {
 async function addToCrm(req, res, next) {
   let condition = { _id: mongoose.Types.ObjectId(req.query.id) };
   EngineeringRequest.find(condition)
-    .populate("shipmentType")
     .populate("userId")
     .populate("customerId")
     .exec(async (err, data) => {
@@ -234,11 +248,11 @@ async function addToCrm(req, res, next) {
           priority: engRequest.priority,
           projectName: engRequest.projectName,
           requestDescription: engRequest.requestDescription,
-          shipmentType: engRequest.shipmentType.name,
+          shipmentType: engRequest.shipmentType,
           shipmentAddress: engRequest.shipmentAddress,
-          userId: engRequest.userId.email,
+          userId: "v-pamoh@microsoft.com",//engRequest.userId.email,
           msftAlias: engRequest.msftAlias,
-          customerId: engRequest.customerId.email,
+          customerId: "v-mifass@microsoft.com", //engRequest.customerId.email,
           customerMsftAlias: engRequest.customerMsftAlias,
           status: engRequest.status,
           successCriteria: engRequest.successCriteria,
@@ -250,15 +264,15 @@ async function addToCrm(req, res, next) {
           crmId: engRequest.crmId,
         };
 
-        console.log(payload);
+        console.log(JSON.stringify(payload));
 
         let crmId = await axios
           .post(
-            `https://hwlabemailservice.azurewebsites.net:443/api/CRMSync/triggers/manual/invoke?api-version=2022-05-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=sY494hGI4sIyCfYUeSdlmbl2ejrA8qn3jaFw75npOY8`,
+            process.env.CREATE_CASE,
             payload
           )
           .then(async (response) => {
-            const crmid = response.headers.crmid;
+            const crmid = response.headers.caseid;
             console.log(`CRM ID: ${crmid}`);
             EngineeringRequest.update(condition, {
               $set: { crmId: crmid },

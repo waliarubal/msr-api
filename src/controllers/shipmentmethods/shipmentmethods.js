@@ -27,9 +27,21 @@ module.exports.get = function (req, res, next) {
 };
 
 module.exports.getShipmentMethods = async function (req, res, next) {
-  // let condition = { requestTypeId: mongoose.Types.ObjectId(req.body._id) };
-  // console.log(condition);
-  //query shipment methods to obtain the list of shipment methods and their ids
+  let methods = [
+    { _id: 1, name: "Ship to Address" },
+    { _id: 2, name: "Ship to Work Address" },
+    { _id: 3, name: "Other" },
+    { _id: 4, name: "Pickup at HWLab(Cabinet)" },
+    { _id: 5, name: "None" },
+  ];
+
+  return res.status(200).json({
+    success: true,
+    message: "Request completed successfully.",
+    data: methods,
+  });
+
+  // OLD CODE
   let condition = { isActive: true };
   let shiptypes = await ShipmentTypes.find(condition).exec(function (
     err,

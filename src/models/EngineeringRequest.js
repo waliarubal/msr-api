@@ -2,21 +2,18 @@ const mongoose = require("mongoose");
 
 const EngineeringRequestsSchema = new mongoose.Schema(
   {
-    priority: { type: String },
+    priority: { type: Number },
     projectName: { type: String },
     requestDescription: { type: String },
     successCriteria: { type: String },
     requestedCompletionDate: { type: Date, default: Date.now },
-    shipmentType: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "ShipmentTypes",
-    },
+    shipmentType: { type: Number },
     shipmentAddress: { type: String },
     status: { type: mongoose.Schema.Types.ObjectId, ref: "Status" },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // requester
     msftAlias: { type: String }, // requester
     customerId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    customerMsftAlias: {type: String},
+    customerMsftAlias: { type: String },
     modifiedAt: { type: Date, default: Date.now },
     createdAt: { type: Date, default: Date.now },
     isActive: { type: Boolean, default: true },
