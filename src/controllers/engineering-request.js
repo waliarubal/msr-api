@@ -13,7 +13,7 @@ const PRIORITY = {
   Critical: 4,
   High: 1,
   Normal: 2,
-  Low: 3
+  Low: 3,
 };
 
 const SHIPMENT_TYPE = {
@@ -21,7 +21,7 @@ const SHIPMENT_TYPE = {
   ShipToWorkAddress: 2,
   Other: 3,
   PickupAtHwLabCabinet: 4,
-  None: 5
+  None: 5,
 };
 
 function post(req, res, next) {
@@ -250,7 +250,7 @@ async function addToCrm(req, res, next) {
           requestDescription: engRequest.requestDescription,
           shipmentType: engRequest.shipmentType,
           shipmentAddress: engRequest.shipmentAddress,
-          userId: "v-pamoh@microsoft.com",//engRequest.userId.email,
+          userId: "v-pamoh@microsoft.com", //engRequest.userId.email,
           msftAlias: engRequest.msftAlias,
           customerId: "v-mifass@microsoft.com", //engRequest.customerId.email,
           customerMsftAlias: engRequest.customerMsftAlias,
@@ -267,10 +267,7 @@ async function addToCrm(req, res, next) {
         console.log(JSON.stringify(payload));
 
         let crmId = await axios
-          .post(
-            process.env.CREATE_CASE,
-            payload
-          )
+          .post(process.env.CREATE_CASE, payload)
           .then(async (response) => {
             const crmid = response.headers.caseid;
             console.log(`CRM ID: ${crmid}`);
@@ -295,9 +292,34 @@ async function addToCrm(req, res, next) {
     });
 }
 
+function updateNotes(req, res, next) {
+  const response = req.body;
+  for (let index = 0; index < response.length; index++) {
+    let record = response[index];
+    let crmId = record.CrmId;
+    let notes = record.Notes;
+
+    let condition = { crmId: crmId };
+    EngineeringRequest.update(condition, {
+      $set: { notes: notes },
+    }).exec((error, data) => {
+      if (!data)
+        console.log(
+          `Updated notes for engineering request with CRM ID ${crmId}.`
+        );
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: `Notes updated for engineering requests.`,
+  });
+}
+
 router.get("/getById", validator.authTokenValidate, getById);
 router.get("/addToCrm", validator.authTokenValidate, addToCrm);
 router.get("/get", validator.authTokenValidate, get);
+router.post("/updateNotes", updateNotes);
 router.post("/post", validator.authTokenValidate, post);
 router.put("/put", validator.authTokenValidate, put);
 router.delete("/delete", validator.authTokenValidate, del);
