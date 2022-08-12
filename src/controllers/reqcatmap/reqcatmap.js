@@ -84,10 +84,35 @@ module.exports.getReqTypeWiseCat = function (req, res, next) {
       });
     } else {
       if (!!data) {
+        let categories = [];
+
+        // sorting for Mechanical Engineering Request as per John
+        if (req.body._id == "5eaa501ca111ad0cfce91f04") {
+          let record = data.filter((x) => x.name == "Water Jet")[0];
+          categories.push(record);
+
+          record = data.filter((x) => x.name == "Laser Cut")[0];
+          categories.push(record);
+
+          record = data.filter((x) => x.name == "3D print")[0];
+          categories.push(record);
+
+          record = data.filter((x) => x.name == "Machine parts")[0];
+          categories.push(record);
+
+          record = data.filter(
+            (x) => x.name == "Mechanical modification or alteration"
+          )[0];
+          categories.push(record);
+
+          record = data.filter((x) => x.name == "CAD design")[0];
+          categories.push(record);
+        } else categories = data;
+
         res.status(200).json({
           success: true,
           message: "Request Completed Successfully",
-          data: data,
+          data: categories,
         });
       } else {
         res.status(200).json({
