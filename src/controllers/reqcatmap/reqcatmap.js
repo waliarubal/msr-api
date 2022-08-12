@@ -88,24 +88,24 @@ module.exports.getReqTypeWiseCat = function (req, res, next) {
 
         // sorting for Mechanical Engineering Request as per John
         if (req.body._id == "5eaa501ca111ad0cfce91f04") {
-          let record = data.filter((x) => x.name == "Water Jet")[0];
+          let record = data.filter((x) => x.categoryName == "Water Jet")[0];
           categories.push(record);
 
-          record = data.filter((x) => x.name == "Laser Cut")[0];
+          record = data.filter((x) => x.categoryName == "Laser Cut")[0];
           categories.push(record);
 
-          record = data.filter((x) => x.name == "3D print")[0];
+          record = data.filter((x) => x.categoryName == "3D print")[0];
           categories.push(record);
 
-          record = data.filter((x) => x.name == "Machine parts")[0];
+          record = data.filter((x) => x.categoryName == "Machine parts")[0];
           categories.push(record);
 
           record = data.filter(
-            (x) => x.name == "Mechanical modification or alteration"
+            (x) => x.categoryName == "Mechanical modification or alteration"
           )[0];
           categories.push(record);
 
-          record = data.filter((x) => x.name == "CAD design")[0];
+          record = data.filter((x) => x.categoryName == "CAD design")[0];
           categories.push(record);
         } else categories = data;
 
