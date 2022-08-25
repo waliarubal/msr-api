@@ -9,6 +9,7 @@ router.use((req, res, next) => {
   next();
 });
 
+router.use("/graph", require("./controllers/graph"));
 router.use("/eng-request", require("./controllers/engineering-request"));
 router.use("/user", require("./controllers/user"));
 router.use("/request", require("./controllers/request"));

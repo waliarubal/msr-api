@@ -50,7 +50,7 @@ function post(req, res, next) {
   engRequest.requestedCompletionDate = dueDate;
   engRequest.userId = mongoose.Types.ObjectId(userId); // discuss
   engRequest.msftAlias = msftAlias; // discuss
-  engRequest.customerId = mongoose.Types.ObjectId(customerId);
+  engRequest.customerId = customerId; //mongoose.Types.ObjectId(customerId);
   engRequest.customerMsftAlias = customerMsftAlias;
   engRequest.shipmentType = shipmentTypeId; // discuss
   engRequest.shipmentAddress = shipmentAddress; // discuss
@@ -104,7 +104,7 @@ function put(req, res, next) {
   engRequest.projectName = projectName;
   engRequest.requestDescription = requestDescription;
   engRequest.requestedCompletionDate = requestedCompletionDate;
-  engRequest.customerId = mongoose.Types.ObjectId(customerId);
+  engRequest.customerId = customerId; //mongoose.Types.ObjectId(customerId);
   engRequest.customerMsftAlias = customerMsftAlias;
   engRequest.userId = mongoose.Types.ObjectId(userId);
   engRequest.msftAlias = msftAlias;
@@ -193,7 +193,7 @@ async function addToCrm(req, res, next) {
   let condition = { _id: mongoose.Types.ObjectId(req.query.id) };
   EngineeringRequest.find(condition)
     .populate("userId")
-    .populate("customerId")
+    //.populate("customerId")
     .exec(async (err, data) => {
       if (err) {
         return res.status(200).json({
@@ -250,9 +250,9 @@ async function addToCrm(req, res, next) {
           requestDescription: engRequest.requestDescription,
           shipmentType: engRequest.shipmentType,
           shipmentAddress: engRequest.shipmentAddress,
-          userId: "v-pamoh@microsoft.com", //engRequest.userId.email,
+          userId: engRequest.userId.email, //"v-pamoh@microsoft.com"
           msftAlias: engRequest.msftAlias,
-          customerId: "v-mifass@microsoft.com", //engRequest.customerId.email,
+          customerId:  engRequest.customerId, //engRequest.customerId.email, // "v-mifass@microsoft.com",
           customerMsftAlias: engRequest.customerMsftAlias,
           status: engRequest.status,
           successCriteria: engRequest.successCriteria,

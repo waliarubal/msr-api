@@ -29,6 +29,7 @@
   "dependencies": {
     "@azure/identity": "^1.2.0",
     "@azure/keyvault-secrets": "^4.1.0",
+    "@microsoft/microsoft-graph-client": "^3.0.2",
     "azure-keyvault": "^3.0.5",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
@@ -57,6 +58,7 @@
     "util": "^0.12.3"
   },
   "devDependencies": {
+    "@microsoft/microsoft-graph-types": "^2.23.0",
     "nodemon": "^2.0.18"
   }
 }
