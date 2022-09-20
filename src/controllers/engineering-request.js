@@ -69,6 +69,17 @@ function post(req, res, next) {
         error: err,
       });
     } else {
+      // send email
+      let mailPayload = {
+        body: `Engineering request with project name '${projectName}' received from customer ${engRequest.customerId}.`,
+        from: "hardlab@microsoft.com",
+        subject: "Engineering Request Received",
+        to: "hardlab@microsoft.com",
+      };
+      await axios
+        .post(process.env.SEND_EMAIL, mailPayload)
+        .then((response) => console.log("Request creation email sent."));
+
       return res.status(200).json({
         success: true,
         message: `Engineering request ${isDraft ? "draft " : " "}created.`,
@@ -252,7 +263,7 @@ async function addToCrm(req, res, next) {
           shipmentAddress: engRequest.shipmentAddress,
           userId: engRequest.userId.email, //"v-pamoh@microsoft.com"
           msftAlias: engRequest.msftAlias,
-          customerId:  engRequest.customerId, //engRequest.customerId.email, // "v-mifass@microsoft.com",
+          customerId: engRequest.customerId, //engRequest.customerId.email, // "v-mifass@microsoft.com",
           customerMsftAlias: engRequest.customerMsftAlias,
           status: engRequest.status,
           successCriteria: engRequest.successCriteria,
@@ -266,28 +277,37 @@ async function addToCrm(req, res, next) {
 
         console.log(JSON.stringify(payload));
 
-        let crmId = await axios
-          .post(process.env.CREATE_CASE, payload)
-          .then(async (response) => {
-            const crmid = response.headers.caseid;
-            console.log(`CRM ID: ${crmid}`);
-            EngineeringRequest.update(condition, {
-              $set: { crmId: crmid },
-            }).exec((error, data) => {
-              if (!data)
-                console.log(
-                  `Updated engineering request with CRM ID ${crmid}.`
-                );
+        try {
+          let crmId = await axios
+            .post(process.env.CREATE_CASE, payload)
+            .then(async (response) => {
+              const crmid = response.headers.caseid;
+              console.log(`CRM ID: ${crmid}`);
+              EngineeringRequest.update(condition, {
+                $set: { crmId: crmid },
+              }).exec((error, data) => {
+                if (!data)
+                  console.log(
+                    `Updated engineering request with CRM ID ${crmid}.`
+                  );
+              });
+
+              return crmid;
             });
 
-            return crmid;
+          return res.status(200).json({
+            success: true,
+            message: `Enginnering request '${req.query.id}' added to CRM with ID ${crmId}.`,
+            data: crmId,
           });
-
-        return res.status(200).json({
-          success: true,
-          message: `Enginnering request '${req.query.id}' added to CRM with ID ${crmId}.`,
-          data: crmId,
-        });
+        } catch {
+          // throw error in case of Logic App failure
+          return res.status(200).json({
+            success: false,
+            message: `Failed to add Enginnering request to CRM.`,
+            data: "",
+          });
+        }
       }
     });
 }
