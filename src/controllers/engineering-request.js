@@ -295,9 +295,14 @@ async function addToCrm(req, res, next) {
               return crmid;
             });
 
+          let message =
+            crmId == "NO_CUSTOMER"
+              ? `Customer ${engRequest.customerId} does not exist. Please create it in CRM before submitting request.`
+              : `Enginnering request '${req.query.id}' added to CRM with ID ${crmId}.`;
+
           return res.status(200).json({
             success: true,
-            message: `Enginnering request '${req.query.id}' added to CRM with ID ${crmId}.`,
+            message: message,
             data: crmId,
           });
         } catch {
