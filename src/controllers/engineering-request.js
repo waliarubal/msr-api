@@ -40,10 +40,14 @@ function post(req, res, next) {
     isDraft,
     files,
     successCriteria,
+    submittedOn,
+    requesterEmail,
   } = req.body;
   console.log(req.body);
 
   let engRequest = new EngineeringRequest();
+  engRequest.submittedOn = submittedOn;
+  engRequest.requesterEmail = requesterEmail;
   engRequest.priority = priority;
   engRequest.projectName = projectName;
   engRequest.requestDescription = requestDescription;
@@ -107,10 +111,14 @@ function put(req, res, next) {
     files,
     successCriteria,
     status,
+    submittedOn,
+    requesterEmail,
   } = req.body;
   console.log(req.body);
 
   let engRequest = {};
+  engRequest.submittedOn = submittedOn;
+  engRequest.requesterEmail = requesterEmail;
   engRequest.priority = priority;
   engRequest.projectName = projectName;
   engRequest.requestDescription = requestDescription;
