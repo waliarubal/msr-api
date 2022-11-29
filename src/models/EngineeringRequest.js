@@ -12,7 +12,7 @@ const EngineeringRequestsSchema = new mongoose.Schema(
     status: { type: mongoose.Schema.Types.ObjectId, ref: "Status" },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // requester
     msftAlias: { type: String }, // requester
-    customerId: {type: String}, //{ type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    customerId: { type: String }, //{ type: mongoose.Schema.Types.ObjectId, ref: "User" },
     customerMsftAlias: { type: String },
     modifiedAt: { type: Date, default: Date.now },
     createdAt: { type: Date, default: Date.now },
@@ -21,6 +21,8 @@ const EngineeringRequestsSchema = new mongoose.Schema(
     notes: [],
     files: [],
     requestTypes: [],
+    submittedOn: { type: String },
+    requesterEmail: { type: String },
   },
   { timestamp: { createdAt: "createdAt", updatedAt: "modifiedAt" } }
 );
